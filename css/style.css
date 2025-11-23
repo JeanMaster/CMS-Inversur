@@ -44,15 +44,17 @@ body {
     background-color: var(--bg-body);
     color: var(--text-main);
     display: flex;
+    flex-direction: column;
+    /* Stack for mobile */
     min-height: 100vh;
     transition: background-color 0.3s, color 0.3s;
+    overflow-x: hidden;
 }
 
-/* Sidebar (Always Dark) */
+/* --- Sidebar (Mobile First: Hidden) --- */
 .sidebar {
     width: var(--sidebar-width);
     background-color: #0f172a;
-    /* Fixed dark */
     color: #ffffff;
     display: flex;
     flex-direction: column;
@@ -60,7 +62,16 @@ body {
     height: 100vh;
     left: 0;
     top: 0;
-    z-index: 10;
+    z-index: 50;
+    /* High z-index for mobile overlay */
+    transform: translateX(-100%);
+    /* Hidden by default on mobile */
+    transition: transform 0.3s ease;
+}
+
+.sidebar.active {
+    transform: translateX(0);
+    /* Show on mobile when active */
 }
 
 .sidebar-header {
@@ -116,36 +127,75 @@ body {
     text-align: center;
 }
 
-/* Main Content */
+/* --- Mobile Overlay --- */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* --- Main Content (Mobile First: Full Width) --- */
 .main-content {
-    margin-left: var(--sidebar-width);
+    margin-left: 0;
+    width: 100%;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    width: calc(100% - var(--sidebar-width));
+    transition: margin-left 0.3s ease, width 0.3s ease;
 }
 
-/* Header */
+/* --- Header --- */
 .top-header {
-    height: var(--header-height);
+    height: auto;
+    /* Allow height to grow on mobile */
+    min-height: var(--header-height);
     background-color: var(--bg-surface);
     border-bottom: 1px solid var(--border-color);
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 32px;
-
+    flex-direction: column;
+    /* Stack on mobile */
+    gap: 16px;
+    padding: 16px;
     position: sticky;
     top: 0;
-    z-index: 5;
+    z-index: 30;
     transition: background-color 0.3s, border-color 0.3s;
 }
 
 .header-left {
     display: flex;
+    flex-direction: column;
+    /* Stack title and search on mobile */
+    gap: 16px;
+    width: 100%;
+}
+
+.header-title {
+    display: flex;
     align-items: center;
-    gap: 24px;
-    flex: 1;
+    gap: 12px;
+}
+
+.sidebar-toggle {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-main);
+    display: block;
+    /* Visible on mobile */
 }
 
 .header-title h1 {
@@ -157,8 +207,9 @@ body {
 /* Search Bar */
 .search-container {
     position: relative;
-    max-width: 300px;
     width: 100%;
+    max-width: 100%;
+    /* Full width on mobile */
 }
 
 .search-container .search-input {
@@ -184,7 +235,9 @@ body {
 .header-right {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 20px;
+    width: 100%;
 }
 
 /* Theme Toggle */
@@ -222,25 +275,27 @@ body {
     font-size: 0.9rem;
 }
 
-/* Dashboard Content */
+/* --- Dashboard Content --- */
 .dashboard-container {
-    padding: 32px;
+    padding: 16px;
+    /* Smaller padding on mobile */
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: 24px;
 }
 
 /* Stats Grid */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 24px;
+    grid-template-columns: 1fr;
+    /* Single column on mobile */
+    gap: 16px;
 }
 
 .card {
     background-color: var(--bg-surface);
     border-radius: var(--radius-lg);
-    padding: 24px;
+    padding: 20px;
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--border-color);
     transition: background-color 0.3s, border-color 0.3s;
@@ -275,14 +330,9 @@ body {
 /* Logistics Grid (Map + Alerts) */
 .logistics-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr;
+    /* Stacked on mobile */
     gap: 24px;
-}
-
-@media (max-width: 1024px) {
-    .logistics-grid {
-        grid-template-columns: 1fr;
-    }
 }
 
 .section-header {
@@ -290,6 +340,9 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
+    flex-wrap: wrap;
+    /* Allow wrapping for small screens */
+    gap: 8px;
 }
 
 .section-title {
@@ -299,12 +352,12 @@ body {
 }
 
 .map-container {
-    height: 350px;
+    height: 300px;
+    /* Slightly smaller on mobile */
     width: 100%;
     border-radius: var(--radius-md);
     overflow: hidden;
     z-index: 1;
-    /* Fix for leaflet z-index issues */
 }
 
 .alerts-list {
@@ -352,20 +405,16 @@ body {
 /* Analytics Grid (Line + Pie) */
 .analytics-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr;
+    /* Stacked on mobile */
     gap: 24px;
-}
-
-@media (max-width: 1024px) {
-    .analytics-grid {
-        grid-template-columns: 1fr;
-    }
 }
 
 .chart-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    /* Stack on mobile */
+    gap: 12px;
     margin-bottom: 24px;
 }
 
@@ -374,6 +423,8 @@ body {
     background-color: var(--bg-body);
     padding: 4px;
     border-radius: var(--radius-md);
+    overflow-x: auto;
+    /* Scroll if too many filters */
 }
 
 .filter-btn {
@@ -386,6 +437,7 @@ body {
     cursor: pointer;
     border-radius: 4px;
     transition: all 0.2s;
+    white-space: nowrap;
 }
 
 .filter-btn:hover {
@@ -400,7 +452,8 @@ body {
 
 .chart-container {
     position: relative;
-    height: 300px;
+    height: 250px;
+    /* Smaller on mobile */
     width: 100%;
 }
 
@@ -414,8 +467,11 @@ body {
     font-size: 0.85rem;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
     transition: all 0.2s;
+    width: 100%;
+    /* Full width button on mobile */
 }
 
 .btn-export:hover {
@@ -426,12 +482,15 @@ body {
 /* Recent Shipments Table */
 .table-container {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .data-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.9rem;
+    min-width: 600px;
+    /* Force scroll on small screens */
 }
 
 .data-table th {
@@ -457,6 +516,7 @@ body {
     border-radius: 12px;
     font-size: 0.75rem;
     font-weight: 600;
+    white-space: nowrap;
 }
 
 .status-transit {
@@ -501,6 +561,8 @@ body {
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
+    padding: 16px;
+    /* Padding for mobile */
 }
 
 .modal-overlay.active {
@@ -510,7 +572,7 @@ body {
 
 .modal-content {
     background-color: var(--bg-surface);
-    padding: 32px;
+    padding: 24px;
     border-radius: var(--radius-lg);
     width: 100%;
     max-width: 500px;
@@ -518,6 +580,8 @@ body {
     transform: translateY(-20px);
     transition: transform 0.3s ease;
     border: 1px solid var(--border-color);
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .modal-overlay.active .modal-content {
@@ -555,7 +619,8 @@ body {
 
 .form-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
+    /* Stack on mobile */
     gap: 16px;
 }
 
@@ -654,4 +719,103 @@ select:focus {
     border-radius: 8px;
     background-color: var(--bg-body);
     object-fit: cover;
+}
+
+/* =========================================
+   DESKTOP STYLES (Media Queries)
+   ========================================= */
+
+@media (min-width: 768px) {
+
+    /* Tablet and up */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .form-row {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .chart-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-export {
+        width: auto;
+    }
+}
+
+@media (min-width: 1024px) {
+    /* Desktop */
+
+    /* Sidebar Fixed */
+    .sidebar {
+        transform: translateX(0);
+        /* Always visible */
+    }
+
+    .sidebar-toggle {
+        display: none;
+        /* Hide toggle */
+    }
+
+    .sidebar-overlay {
+        display: none;
+        /* Never show overlay */
+    }
+
+    /* Main Content Shift */
+    .main-content {
+        margin-left: var(--sidebar-width);
+        width: calc(100% - var(--sidebar-width));
+    }
+
+    /* Header */
+    .top-header {
+        flex-direction: row;
+        justify-content: space-between;
+        height: var(--header-height);
+        padding: 0 32px;
+    }
+
+    .header-left {
+        flex-direction: row;
+        align-items: center;
+        width: auto;
+    }
+
+    .search-container {
+        max-width: 300px;
+    }
+
+    .header-right {
+        width: auto;
+    }
+
+    /* Dashboard */
+    .dashboard-container {
+        padding: 32px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .logistics-grid {
+        grid-template-columns: 2fr 1fr;
+    }
+
+    .analytics-grid {
+        grid-template-columns: 2fr 1fr;
+    }
+
+    .map-container {
+        height: 350px;
+    }
+
+    .chart-container {
+        height: 300px;
+    }
 }

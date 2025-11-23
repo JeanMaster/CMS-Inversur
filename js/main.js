@@ -2,6 +2,36 @@
 const themeToggleBtn = document.getElementById('themeToggle');
 const body = document.body;
 
+// Sidebar Toggle Logic
+const sidebarToggleBtn = document.getElementById('sidebarToggle');
+const sidebar = document.querySelector('.sidebar');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+if (sidebarToggleBtn) {
+    sidebarToggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('active');
+        sidebarOverlay.classList.toggle('active');
+    });
+}
+
+if (sidebarOverlay) {
+    sidebarOverlay.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        sidebarOverlay.classList.remove('active');
+    });
+}
+
+// Close sidebar when clicking a nav link on mobile
+const navLinks = document.querySelectorAll('.nav-link');
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth < 1024) {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        }
+    });
+});
+
 // Check for saved theme preference
 const savedTheme = localStorage.getItem('theme');
 if (savedTheme) {

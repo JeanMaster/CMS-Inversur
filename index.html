@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InversurCMS - Dashboard Logístico</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Leaflet.js (Map) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="assets/logo.png" alt="Inversur Logo" class="logo">
+            <span class="brand-name">InversurCMS</span>
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item">
+                <a href="index.html" class="nav-link active">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="inventory.html" class="nav-link">
+                    <span class="nav-icon">📦</span>
+                    Inventario
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <span class="nav-icon">🚚</span>
+                    Logística
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <span class="nav-icon">⚙️</span>
+                    Configuración
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="top-header">
+            <div class="header-left">
+                <div class="header-title">
+                    <h1>Dashboard General</h1>
+                </div>
+                <!-- Search Bar -->
+                <div class="search-container">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="globalSearch" class="search-input" placeholder="Buscar pedido, cliente...">
+                </div>
+            </div>
+
+            <div class="header-right">
+                <!-- Theme Toggle -->
+                <button id="themeToggle" class="theme-toggle" title="Cambiar Tema">
+                    🌙
+                </button>
+
+                <div class="user-profile">
+                    <span>Admin User</span>
+                    <div class="avatar">AU</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Container -->
+        <div class="dashboard-container">
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="card stat-card">
+                    <h3>Ventas Totales</h3>
+                    <div class="stat-value">$124,500</div>
+                    <div class="stat-trend trend-up">↑ 12% vs mes anterior</div>
+                </div>
+                <div class="card stat-card">
+                    <h3>Envíos Activos</h3>
+                    <div class="stat-value">45</div>
+                    <div class="stat-trend">En tránsito</div>
+                </div>
+                <div class="card stat-card">
+                    <h3>Entregas Hoy</h3>
+                    <div class="stat-value">12</div>
+                    <div class="stat-trend trend-up">↑ 2 vs ayer</div>
+                </div>
+                <div class="card stat-card">
+                    <h3>Eficiencia</h3>
+                    <div class="stat-value">98.5%</div>
+                    <div class="stat-trend trend-up">↑ 0.5% objetivo</div>
+                </div>
+            </div>
+
+            <!-- Logistics Row (Map + Alerts) -->
+            <div class="logistics-grid">
+                <!-- Map -->
+                <div class="card">
+                    <div class="section-header">
+                        <h2 class="section-title">Flota en Tiempo Real</h2>
+                        <span class="stat-trend trend-up">● 5 Unidades Activas</span>
+                    </div>
+                    <div id="fleetMap" class="map-container"></div>
+                </div>
+
+                <!-- Alerts -->
+                <div class="card">
+                    <div class="section-header">
+                        <h2 class="section-title">Alertas</h2>
+                    </div>
+                    <div class="alerts-list" id="alertsList">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Row (Line Chart + Pie Chart) -->
+            <div class="analytics-grid">
+                <!-- Sales Chart -->
+                <div class="card">
+                    <div class="chart-header">
+                        <h2 class="section-title">Resumen de Ventas</h2>
+                        <div class="chart-filters">
+                            <button class="filter-btn" data-filter="year">Año</button>
+                            <button class="filter-btn" data-filter="month">Mes</button>
+                            <button class="filter-btn active" data-filter="week">Semana</button>
+                            <button class="filter-btn" data-filter="day">Día</button>
+                        </div>
+                        <button id="exportBtn" class="btn-export">
+                            📥 Exportar
+                        </button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Category Chart -->
+                <div class="card">
+                    <div class="section-header">
+                        <h2 class="section-title">Por Categoría</h2>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Shipments Table -->
+            <div class="card">
+                <div class="section-header">
+                    <h2 class="section-title">Envíos Recientes</h2>
+                    <button class="btn-action">Ver Todos</button>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID Pedido</th>
+                                <th>Cliente</th>
+                                <th>Destino</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shipmentsTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/main.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+
+</html>
